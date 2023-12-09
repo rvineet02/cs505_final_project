@@ -1,0 +1,7 @@
+Instruction: Your task is to meticulously correct the grammar of the sentence provided under 'Sentence'. This includes fixing issues like incorrect verb tenses, subject-verb agreement, improper punctuation, and spelling mistakes. Additionally, enhance the sentence's syntax and cohesion, and strengthen its overall construction. Ensure that the 'Corrected Sentence' reflects these improvements while preserving the original meaning and intent of the input.
+
+### Sentence:
+{sentence}
+
+### Corrected Sentence:
+{corrected_sentence}
