@@ -38,7 +38,7 @@ def apply_corrections(text: str, corrections: Dict[str, np.ndarray]) -> str:
             # Update the offset
             offset -= end - start
 
-    return re.sub("\n+", "\n", corrected_text)
+    return corrected_text
 
 
 def preprocess_wi_locness_dataset(df: pd.DataFrame) -> pd.DataFrame:
@@ -53,14 +53,11 @@ def preprocess_wi_locness_dataset(df: pd.DataFrame) -> pd.DataFrame:
         lambda row: apply_corrections(row["text"], row["edits"]), axis=1
     )
     processed_df = pd.DataFrame(columns=["prompts", "input_text", "output_text"])
-    processed_df["input_text"] = np.concatenate(
-        [df["text"][i].split("\n") for i in range(df.shape[0])]
-    )
-    processed_df["output_text"] = np.concatenate(
-        [corrected_text[i].split("\n") for i in range(df.shape[0])]
-    )
+    processed_df["input_text"] = df["text"].str.replace(r"\s+", " ")
+    processed_df["output_text"] = corrected_text.str.replace(r"\s+", " ")
+
     processed_df["prompts"] = np.random.choice(
         alternative_prompts, size=processed_df.shape[0], replace=True
     )
-    
+
     return processed_df
