@@ -1,1 +1,3 @@
 **data/
+.flake8
+pyproject.toml
