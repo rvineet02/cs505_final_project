@@ -9,7 +9,7 @@ seed_everything(seed=42)
 
 def preprocess_coedit_dataset(df: pd.DataFrame) -> pd.DataFrame:
     df["prompts"] = df["src"].str.extract(r"^(.*?):")
-    df["input_text"] = df["src"].str.extract(r":(.+)")
+    df["input_text"] = df["src"].str.extract(r": (.+)")
     df.rename({"tgt": "output_text"}, axis=1, inplace=True)
     return df[["task", "prompts", "input_text", "output_text"]]
 
@@ -53,8 +53,8 @@ def preprocess_wi_locness_dataset(df: pd.DataFrame) -> pd.DataFrame:
         lambda row: apply_corrections(row["text"], row["edits"]), axis=1
     )
     processed_df = pd.DataFrame(columns=["prompts", "input_text", "output_text"])
-    processed_df["input_text"] = df["text"].str.replace(r"\s+", " ")
-    processed_df["output_text"] = corrected_text.str.replace(r"\s+", " ")
+    processed_df["input_text"] = df["text"].str.replace(r"\s+", " ", regex=True)
+    processed_df["output_text"] = corrected_text.str.replace(r"\s+", " ", regex=True)
 
     processed_df["prompts"] = np.random.choice(
         alternative_prompts, size=processed_df.shape[0], replace=True
