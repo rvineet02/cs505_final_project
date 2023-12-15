@@ -1,6 +1,5 @@
 import transformers
 from peft import (
-    prepare_model_for_kbit_training,
     get_peft_model,
     LoftQConfig,
     LoraConfig,
@@ -9,7 +8,7 @@ from datasets import load_dataset
 import os
 import pandas as pd
 import wandb
-from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
+from transformers import AutoTokenizer, AutoModelForCausalLM
 from pathlib import Path
 from datetime import datetime
 import torch
@@ -84,21 +83,11 @@ if __name__ == "__main__":
         remove_columns=["task", "instruction", "sentence", "corrected_sentence"],
     )
 
-    bnb_config = BitsAndBytesConfig(
-        load_in_4bit=True,
-        bnb_4bit_use_double_quant=True,
-        bnb_4bit_quant_type="nf4",
-        bnb_4bit_compute_dtype=torch.bfloat16,
-    )
-
     model = AutoModelForCausalLM.from_pretrained(
         pretrained_model_name_or_path=MODEL_ID,
         cache_dir=CACHE_DIR,
-        quantization_config=bnb_config,
         use_cache=False,
     )
-
-    model = prepare_model_for_kbit_training(model)
 
     loftq_config = LoftQConfig(loftq_bits=4)
 
@@ -107,15 +96,7 @@ if __name__ == "__main__":
         loftq_config=loftq_config,
         r=16,
         lora_alpha=8,
-        target_modules=[
-            "v_proj",
-            "down_proj",
-            "up_proj",
-            "o_proj",
-            "q_proj",
-            "gate_proj",
-            "k_proj",
-        ],
+        target_modules=["q_proj", "k_proj", "v_proj", "o_proj"],
         lora_dropout=0.05,
         bias="none",
         task_type="CAUSAL_LM",
