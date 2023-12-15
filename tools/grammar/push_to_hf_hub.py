@@ -4,7 +4,6 @@ from peft import PeftModel
 
 CACHE_DIR = "/home/paperspace/.cache/huggingface/transformers"
 MODEL_ID = "mistralai/Mistral-7B-v0.1"
-FINE_TUNE_ID = "lavaman131/mistral-7b-grammar"
 
 if __name__ == "__main__":
     config = BitsAndBytesConfig(
@@ -22,28 +21,14 @@ if __name__ == "__main__":
     )
 
     tokenizer = AutoTokenizer.from_pretrained(
-        pretrained_model_name_or_path=FINE_TUNE_ID,
+        pretrained_model_name_or_path=MODEL_ID,
         add_bos_token=True,
         cache_dir=CACHE_DIR,
     )
 
-    model = PeftModel.from_pretrained(model, FINE_TUNE_ID, cache_dir=CACHE_DIR)
+    model = PeftModel.from_pretrained(
+        model, "../../exps/mistral-7b-grammar/checkpoint-1000", cache_dir=CACHE_DIR
+    )
 
-    eval_prompt = """Remove all grammatical errors from this text
-
-### Sentence:
-Hellow there me name is Alex
-
-### Corrected Sentence:
-"""
-
-    model_input = tokenizer(eval_prompt, return_tensors="pt").to("cuda")
-
-    model.eval()
-    with torch.no_grad():
-        print(
-            tokenizer.decode(
-                model.generate(**model_input, max_new_tokens=32)[0],
-                skip_special_tokens=True,
-            )
-        )
+    model.push_to_hub("lavaman131/mistral-7b-grammar")
+    tokenizer.push_to_hub("lavaman131/mistral-7b-grammar")
