@@ -1,17 +1,59 @@
-from typing import Dict
+from transformers import AutoTokenizer
+from pathlib import Path
+from typing import TypeVar, Any, Dict, List, Union
 import numpy as np
 import pandas as pd
 from lightning import seed_everything
-import re
 
 seed_everything(seed=42)
 
+PathLike = TypeVar("PathLike", str, bytes, Path)
+PROMPT_TEMPLATE_PATHS = Path(__file__).parent / "prompt_templates"
+
+
+class PromptTemplate:
+    def __init__(self, prompt_template_path: PathLike) -> None:
+        with open(prompt_template_path) as f:
+            self.prompt_template = f.read()
+
+    @property
+    def get_prompt_template(self) -> str:
+        return self.prompt_template
+
+    def format_prompt(self, placeholders: Dict[str, Any]) -> str:
+        prompt = self.prompt_template
+        for place_holder, content in placeholders.items():
+            prompt = prompt.replace("{" + place_holder + "}", content)
+        return prompt
+
+    def __repr__(self) -> str:
+        return self.prompt_template
+
+
+def generate_prompt(
+    example: Dict[str, Any],
+    prompt_template: PromptTemplate,
+    tokenizer: AutoTokenizer,
+    max_length: int,
+    truncation: Union[bool, str],
+    padding: Union[bool, str],
+) -> Dict[str, Any]:
+    result = tokenizer(
+        prompt_template.format_prompt(example["input_text"]),
+        truncation=truncation,
+        max_length=max_length,
+        padding=padding,
+    )
+    result = dict()
+    result["text"] = prompt_template.format_prompt(example)
+    return result
+
 
 def preprocess_coedit_dataset(df: pd.DataFrame) -> pd.DataFrame:
-    df["prompts"] = df["src"].str.extract(r"^(.*?):")
-    df["input_text"] = df["src"].str.extract(r": (.+)")
-    df.rename({"tgt": "output_text"}, axis=1, inplace=True)
-    return df[["task", "prompts", "input_text", "output_text"]]
+    df["instruction"] = df["src"].str.extract(r"^(.*?):")
+    df["sentence"] = df["src"].str.extract(r": (.+)")
+    df.rename({"tgt": "corrected_sentence"}, axis=1, inplace=True)
+    return df[["task", "instruction", "sentence", "corrected_sentence"]]
 
 
 def apply_corrections(text: str, corrections: Dict[str, np.ndarray]) -> str:
@@ -52,11 +94,15 @@ def preprocess_wi_locness_dataset(df: pd.DataFrame) -> pd.DataFrame:
     corrected_text = df.apply(
         lambda row: apply_corrections(row["text"], row["edits"]), axis=1
     )
-    processed_df = pd.DataFrame(columns=["prompts", "input_text", "output_text"])
-    processed_df["input_text"] = df["text"].str.replace(r"\s+", " ", regex=True)
-    processed_df["output_text"] = corrected_text.str.replace(r"\s+", " ", regex=True)
+    processed_df = pd.DataFrame(
+        columns=["instruction", "sentence", "corrected_sentence"]
+    )
+    processed_df["sentence"] = df["text"].str.replace(r"\s+", " ", regex=True)
+    processed_df["corrected_sentence"] = corrected_text.str.replace(
+        r"\s+", " ", regex=True
+    )
 
-    processed_df["prompts"] = np.random.choice(
+    processed_df["instruction"] = np.random.choice(
         alternative_prompts, size=processed_df.shape[0], replace=True
     )
 

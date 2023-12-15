@@ -1,0 +1,220 @@
+{
+    "os": "Linux-4.18.0-513.5.1.el8_9.x86_64-x86_64-with-glibc2.28",
+    "python": "3.10.13",
+    "heartbeatAt": "2023-12-14T23:35:18.429896",
+    "startedAt": "2023-12-14T23:35:18.018145",
+    "docker": null,
+    "cuda": null,
+    "args": [],
+    "state": "running",
+    "program": "/projectnb/cs505ws/projects/grammar_ninja_alavaee/cs505_final_project/tools/grammar/train.py",
+    "codePathLocal": "train.py",
+    "codePath": "tools/grammar/train.py",
+    "git": {
+        "remote": "git@github.com:rvineet02/cs505_final_project.git",
+        "commit": "aa3f5752bd3cf8acb5254ac5a8c8a9096d337eac"
+    },
+    "email": null,
+    "root": "/projectnb/cs505ws/projects/grammar_ninja_alavaee/cs505_final_project",
+    "host": "scc-211",
+    "username": "alavaee",
+    "executable": "/projectnb/cs505ws/projects/grammar_ninja_alavaee/envs/grammar_ninja/bin/python",
+    "cpu_count": 32,
+    "cpu_count_logical": 32,
+    "cpu_freq": {
+        "current": 3.48071875,
+        "min": 800.0,
+        "max": 3500.0
+    },
+    "cpu_freq_per_core": [
+        {
+            "current": 3.5,
+            "min": 800.0,
+            "max": 3500.0
+        },
+        {
+            "current": 3.5,
+            "min": 800.0,
+            "max": 3500.0
+        },
+        {
+            "current": 3.337,
+            "min": 800.0,
+            "max": 3500.0
+        },
+        {
+            "current": 3.5,
+            "min": 800.0,
+            "max": 3500.0
+        },
+        {
+            "current": 3.5,
+            "min": 800.0,
+            "max": 3500.0
+        },
+        {
+            "current": 3.5,
+            "min": 800.0,
+            "max": 3500.0
+        },
+        {
+            "current": 3.337,
+            "min": 800.0,
+            "max": 3500.0
+        },
+        {
+            "current": 3.5,
+            "min": 800.0,
+            "max": 3500.0
+        },
+        {
+            "current": 3.5,
+            "min": 800.0,
+            "max": 3500.0
+        },
+        {
+            "current": 3.5,
+            "min": 800.0,
+            "max": 3500.0
+        },
+        {
+            "current": 3.5,
+            "min": 800.0,
+            "max": 3500.0
+        },
+        {
+            "current": 3.5,
+            "min": 800.0,
+            "max": 3500.0
+        },
+        {
+            "current": 3.5,
+            "min": 800.0,
+            "max": 3500.0
+        },
+        {
+            "current": 3.419,
+            "min": 800.0,
+            "max": 3500.0
+        },
+        {
+            "current": 3.5,
+            "min": 800.0,
+            "max": 3500.0
+        },
+        {
+            "current": 3.5,
+            "min": 800.0,
+            "max": 3500.0
+        },
+        {
+            "current": 3.371,
+            "min": 800.0,
+            "max": 3500.0
+        },
+        {
+            "current": 3.5,
+            "min": 800.0,
+            "max": 3500.0
+        },
+        {
+            "current": 3.5,
+            "min": 800.0,
+            "max": 3500.0
+        },
+        {
+            "current": 3.419,
+            "min": 800.0,
+            "max": 3500.0
+        },
+        {
+            "current": 3.5,
+            "min": 800.0,
+            "max": 3500.0
+        },
+        {
+            "current": 3.5,
+            "min": 800.0,
+            "max": 3500.0
+        },
+        {
+            "current": 3.5,
+            "min": 800.0,
+            "max": 3500.0
+        },
+        {
+            "current": 3.5,
+            "min": 800.0,
+            "max": 3500.0
+        },
+        {
+            "current": 3.5,
+            "min": 800.0,
+            "max": 3500.0
+        },
+        {
+            "current": 3.5,
+            "min": 800.0,
+            "max": 3500.0
+        },
+        {
+            "current": 3.5,
+            "min": 800.0,
+            "max": 3500.0
+        },
+        {
+            "current": 3.5,
+            "min": 800.0,
+            "max": 3500.0
+        },
+        {
+            "current": 3.5,
+            "min": 800.0,
+            "max": 3500.0
+        },
+        {
+            "current": 3.5,
+            "min": 800.0,
+            "max": 3500.0
+        },
+        {
+            "current": 3.5,
+            "min": 800.0,
+            "max": 3500.0
+        },
+        {
+            "current": 3.5,
+            "min": 800.0,
+            "max": 3500.0
+        }
+    ],
+    "disk": {
+        "/": {
+            "total": 19.518142700195312,
+            "used": 13.330886840820312
+        }
+    },
+    "gpu": "NVIDIA A40",
+    "gpu_count": 4,
+    "gpu_devices": [
+        {
+            "name": "NVIDIA A40",
+            "memory_total": 48305799168
+        },
+        {
+            "name": "NVIDIA A40",
+            "memory_total": 48305799168
+        },
+        {
+            "name": "NVIDIA A40",
+            "memory_total": 48305799168
+        },
+        {
+            "name": "NVIDIA A40",
+            "memory_total": 48305799168
+        }
+    ],
+    "memory": {
+        "total": 250.7164764404297
+    }
+}
