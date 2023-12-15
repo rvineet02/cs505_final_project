@@ -1,6 +1,6 @@
 from transformers import AutoTokenizer
 from pathlib import Path
-from typing import TypeVar, Any, Dict, List, Union
+from typing import Optional, TypeVar, Any, Dict, List, Union
 import numpy as np
 import pandas as pd
 from lightning import seed_everything
@@ -34,18 +34,17 @@ def generate_prompt(
     example: Dict[str, Any],
     prompt_template: PromptTemplate,
     tokenizer: AutoTokenizer,
-    max_length: int,
+    max_length: Optional[int],
     truncation: Union[bool, str],
     padding: Union[bool, str],
 ) -> Dict[str, Any]:
     result = tokenizer(
-        prompt_template.format_prompt(example["input_text"]),
+        prompt_template.format_prompt(example),
         truncation=truncation,
         max_length=max_length,
         padding=padding,
     )
-    result = dict()
-    result["text"] = prompt_template.format_prompt(example)
+    result["labels"] = result["input_ids"].copy()
     return result
 
 

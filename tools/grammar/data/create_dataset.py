@@ -4,7 +4,7 @@ from pathlib import Path
 
 
 def main():
-    DATA_DIR = Path("/projectnb/cs505ws/projects/grammar_ninja_alavaee/data/grammar")
+    DATA_DIR = Path("/data/grammar")
 
     coedit_train = pd.read_parquet(path=DATA_DIR.joinpath("coedit", "raw", "train.parquet"))
 
