@@ -2,7 +2,7 @@ import argparse
 
 import gradio as gr
 
-import inference
+from feedback_scores import inference
 
 
 def run(input):
