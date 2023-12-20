@@ -12,7 +12,7 @@ Reviewed: Yes
 
 # Brief Description:
 
-Improving one’s English language writing is a significant challenge without access to proficient teachers that can provide valuable feedback. Given the recent rapid acceleration in generative models ability to understand language, we aim to develop a model/fine-tune a model to provide an interface that will generate feedback given text as an input. Our goal is provide quantitative benchmarks for language proficiency in six different areas: cohesion, syntax, vocabulary, phraseology, grammar, and conventions in a provided writing. Additionally, we also generate feedback at the inference layers to provide concrete feedback as to how the input text can be improved. To conclude, our project aims to apply the concepts learned in class to a real-world challenge, by providing a interface to acquire feedback on English writing. By focusing on key areas of language skills and providing model generated actionable feedback, we hope to contribute a somewhat practical tool. 
+Improving one’s English language writing is a significant challenge without access to proficient teachers that can provide valuable feedback. Given the recent rapid acceleration in generative models ability to understand language, we aim to develop a model/fine-tune a model to provide an interface that will generate feedback given text as an input. Our goal is provide quantitative benchmarks for language proficiency in six different areas: cohesion, syntax, vocabulary, phraseology, grammar, and conventions in a provided writing. Additionally, we also generate feedback at the inference layers to provide concrete feedback as to how the input text can be improved. To conclude, our project aims to apply the concepts learned in class to a real-world challenge, by providing a interface to acquire feedback on English writing. By focusing on key areas of language skills and providing model generated actionable feedback, we hope to contribute a somewhat practical tool.
 
 # Resources:
 
@@ -85,46 +85,42 @@ Grammar, style, and writing improvement datasets:
 ### Data Wrangling:
 
 - Datasets:
-    - [https://www.kaggle.com/competitions/feedback-prize-effectiveness/data?select=train.csv](https://www.kaggle.com/competitions/feedback-prize-effectiveness/data?select=train.csv)
-        
-        ![Screenshot 2023-11-30 at 11.09.28 AM.png](CS505%20Project%20Milestone%201%20020eb00dd91946f0b52eb2650c44c26c/Screenshot_2023-11-30_at_11.09.28_AM.png)
-        
-    - [https://www.kaggle.com/competitions/feedback-prize-2021/data?select=train.csv](https://www.kaggle.com/competitions/feedback-prize-2021/data?select=train.csv)
-        
-        ![Screenshot 2023-11-30 at 11.11.38 AM.png](CS505%20Project%20Milestone%201%20020eb00dd91946f0b52eb2650c44c26c/Screenshot_2023-11-30_at_11.11.38_AM.png)
-        
+  - [https://www.kaggle.com/competitions/feedback-prize-effectiveness/data?select=train.csv](https://www.kaggle.com/competitions/feedback-prize-effectiveness/data?select=train.csv)
+    ![Screenshot 2023-11-30 at 11.09.28 AM.png](./images/CS505%20Project%20Milestone%201%20020eb00dd91946f0b52eb2650c44c26c/Screenshot_2023-11-30_at_11.09.28_AM.png)
+  - [https://www.kaggle.com/competitions/feedback-prize-2021/data?select=train.csv](https://www.kaggle.com/competitions/feedback-prize-2021/data?select=train.csv)
+    ![Screenshot 2023-11-30 at 11.11.38 AM.png](./images/CS505%20Project%20Milestone%201%20020eb00dd91946f0b52eb2650c44c26c/Screenshot_2023-11-30_at_11.11.38_AM.png)
 
-The data sources in focus right now have different labels and methods for classifying different parts of the arguments. All the data will have to be pre-processed to follow the same standard for dissection 
+The data sources in focus right now have different labels and methods for classifying different parts of the arguments. All the data will have to be pre-processed to follow the same standard for dissection
 
 - Models - our project will potentially have three individual models:
-    - Given a piece of text identify which part of the argument it is
-        - Input - A part of an essay
-        - Output - Identification of type of the part - claim, thesis, body, lead, etc
-    - Given a text give back argument scores
-        - Input - An essay along with some pointers that dissect the parts of the essay for the model
-        - Output - Scores for different aspects of the argument such as cohesion, syntax, vocabulary, phraseology, grammar, etc
-    - Given a text give back written feedback
-        - Input - An essay along with some pointers that dissect the parts of the essay for the model (also potentially the scores from the previous model)
-        - Output - written feedback to improve the effectiveness of the argument
+  - Given a piece of text identify which part of the argument it is
+    - Input - A part of an essay
+    - Output - Identification of type of the part - claim, thesis, body, lead, etc
+  - Given a text give back argument scores
+    - Input - An essay along with some pointers that dissect the parts of the essay for the model
+    - Output - Scores for different aspects of the argument such as cohesion, syntax, vocabulary, phraseology, grammar, etc
+  - Given a text give back written feedback
+    - Input - An essay along with some pointers that dissect the parts of the essay for the model (also potentially the scores from the previous model)
+    - Output - written feedback to improve the effectiveness of the argument
 
 ### Methods/Algorithms:
 
 - Learning method (fine-tuning)
-    - Generation (unsupervised learning)
-        - Input: sequence
-        - Output: generation sequence
-    - Generation (supervised learning)
-        - Inspired by T5 architecture (Text-to-Text Transformer Architecture)
-            - Represent learning problem as generating text given:
-                - Input - “Task description: Task input”
-                - Output - “Expected output”
-    - Multi-output model
-        - classification of text
-        - identify start and stop of sequence
-        - BERT variants
+  - Generation (unsupervised learning)
+    - Input: sequence
+    - Output: generation sequence
+  - Generation (supervised learning)
+    - Inspired by T5 architecture (Text-to-Text Transformer Architecture)
+      - Represent learning problem as generating text given:
+        - Input - “Task description: Task input”
+        - Output - “Expected output”
+  - Multi-output model
+    - classification of text
+    - identify start and stop of sequence
+    - BERT variants
 - Two-phase architecture for evaluating writing and giving feedback
-    - Part 1: Score different aspects of current writing
-    - Part 2: Correct the writing for cohesion, style, grammar, etc.
+  - Part 1: Score different aspects of current writing
+  - Part 2: Correct the writing for cohesion, style, grammar, etc.
 
 ### Training/Inference for Model:
 
@@ -135,9 +131,9 @@ How are we going to train the models?
 As we mention above, we will use
 
 - [BERT](https://huggingface.co/bert-base-uncased) - use it to score the text using writing score dataset
-    - fine-tune regression on input text for scoring different aspects of current writing
+  - fine-tune regression on input text for scoring different aspects of current writing
 - [Llama 2](https://huggingface.co/docs/transformers/model_doc/llama2), [T5](https://huggingface.co/grammarly/coedit-xxl), [Mistral 7B](https://huggingface.co/mistralai/Mistral-7B-v0.1) - use it to improve the cohesion, grammar, and style of writing
-    - fine-tune generation on datasets for cohesion, style, grammar, etc.
+  - fine-tune generation on datasets for cohesion, style, grammar, etc.
 
 What compute?
 
@@ -151,12 +147,12 @@ What about inference?
 Create simple website for app demo
 
 - rough structure of website
-    - text box or file upload
-    - UI for text output and scores
+  - text box or file upload
+  - UI for text output and scores
 
 ### Evaluation Strategy:
 
-As discussed above, we aim to use the final output as a mixture of 3 different models, so we need to be able to identify and evaluate individual aspects of the model. 
+As discussed above, we aim to use the final output as a mixture of 3 different models, so we need to be able to identify and evaluate individual aspects of the model.
 
 Model for Identifying Argumentative Aspects of Input Text:
 
@@ -174,7 +170,7 @@ Model for Generating Written Feedback:
 - We can also use Edit distance between the model’s output and the target text to identify how many changes the model needs to make to match the target.
 - We can also use human feedback to do some reinforcement by human feedback to help the model understand the format of how feedback should be like.
 
-As discussed above, we can use the human feedback more broadly as well for all models, thus will help with alignment as well. Then, generally, we also plan to employ higher-level evaluation strategies as well - model comparison between different intermediate techniques (various NN architectures), robustness testing with out-of-sample data, and runtime and resource usage as well. This will improve the generalizability for the models. Additionally, another strategy we can employ to evaluate our model is to compare it to chatGPT 4, so we can compare performance from a general LLM to our more specialized model. 
+As discussed above, we can use the human feedback more broadly as well for all models, thus will help with alignment as well. Then, generally, we also plan to employ higher-level evaluation strategies as well - model comparison between different intermediate techniques (various NN architectures), robustness testing with out-of-sample data, and runtime and resource usage as well. This will improve the generalizability for the models. Additionally, another strategy we can employ to evaluate our model is to compare it to chatGPT 4, so we can compare performance from a general LLM to our more specialized model.
 
 ### Github:
 
@@ -183,15 +179,15 @@ As discussed above, we can use the human feedback more broadly as well for all m
 # Tasks Split:
 
 > From the requirements: Be sure to state, if there is more than one team member, how you will divide up the work.
-> 
-- [x]  @Vineet Raju @Dhruv Chandwani @Alex Lavaee Data Pre-processing
-- [x]  @Alex Lavaee Setting up SCC compute
-- [x]  @Alex Lavaee Setting up Python environment
-- [x]  @Vineet Raju Setup BERT with score [Feedback](https://www.notion.so/CS505-Project-Milestone-1-020eb00dd91946f0b52eb2650c44c26c?pvs=21) dataset
-- [x]  @Dhruv Chandwani Setup Longformer with [Sections of Writing](https://www.notion.so/CS505-Project-Milestone-1-020eb00dd91946f0b52eb2650c44c26c?pvs=21) dataset
-    - [x]  Remember to give feedback based on section of writing that is missing (i.e. evidence is missing) by feeding it to Llama?
-- [x]  @Alex Lavaee Setup Mistral 7B with [Grammarly](https://www.notion.so/CS505-Project-Milestone-1-020eb00dd91946f0b52eb2650c44c26c?pvs=21) dataset
-- [x]  @Vineet Raju @Dhruv Chandwani @Alex Lavaee Prepare Frontend
+
+- [x] @Vineet Raju @Dhruv Chandwani @Alex Lavaee Data Pre-processing
+- [x] @Alex Lavaee Setting up SCC compute
+- [x] @Alex Lavaee Setting up Python environment
+- [x] @Vineet Raju Setup BERT with score [Feedback](https://www.notion.so/CS505-Project-Milestone-1-020eb00dd91946f0b52eb2650c44c26c?pvs=21) dataset
+- [x] @Dhruv Chandwani Setup Longformer with [Sections of Writing](https://www.notion.so/CS505-Project-Milestone-1-020eb00dd91946f0b52eb2650c44c26c?pvs=21) dataset
+  - [x] Remember to give feedback based on section of writing that is missing (i.e. evidence is missing) by feeding it to Llama?
+- [x] @Alex Lavaee Setup Mistral 7B with [Grammarly](https://www.notion.so/CS505-Project-Milestone-1-020eb00dd91946f0b52eb2650c44c26c?pvs=21) dataset
+- [x] @Vineet Raju @Dhruv Chandwani @Alex Lavaee Prepare Frontend
 
 ## Progress Trackers:
 
