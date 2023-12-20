@@ -3,7 +3,7 @@ import argparse
 import torch
 from transformers import BertConfig, BertModel, BertTokenizer
 
-from model import BERT_Classifier
+from feedback_scores.model import BERT_Classifier
 
 tokenizer = BertTokenizer.from_pretrained("bert-base-cased")
 
