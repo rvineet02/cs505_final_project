@@ -1,0 +1,9 @@
+[project]
+name = "grammar_ninja"
+version = "0.0.1"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["*"]
+exclude = []
+namespaces = true
