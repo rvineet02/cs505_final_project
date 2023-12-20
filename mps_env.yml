@@ -1,0 +1,32 @@
+name: grammar_ninja
+channels:
+  - pytorch
+  - conda-forge
+dependencies:
+  - python=3.10
+  - pytorch::pytorch
+  - pytorch::torchvision
+  - pytorch::torchaudio
+  - ca-certificates
+  - openssl
+  - pandas
+  - numpy
+  - matplotlib
+  - seaborn
+  - scikit-learn
+  - scipy
+  - certifi
+  - pyarrow
+  - lightning
+  - ipython
+  - jupyter
+  - ipykernel
+  - pip
+  - pip:
+    - spacy
+    - transformers
+    - peft
+    - bitsandbytes
+    - hf_transfer
+    - datasets
+    
