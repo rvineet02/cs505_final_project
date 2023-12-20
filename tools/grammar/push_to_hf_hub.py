@@ -27,7 +27,7 @@ if __name__ == "__main__":
     )
 
     model = PeftModel.from_pretrained(
-        model, "../../exps/mistral-7b-grammar/checkpoint-1000", cache_dir=CACHE_DIR
+        model, "../../exps/mistral-7b-grammar-all/checkpoint-8000", cache_dir=CACHE_DIR
     )
 
     model.push_to_hub("lavaman131/mistral-7b-grammar")

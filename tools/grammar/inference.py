@@ -38,6 +38,7 @@ In field of NLP, machine learn algorithms is used for make computers can process
         add_bos_token=True,
         cache_dir=CACHE_DIR,
     )
+    tokenizer.pad_token = tokenizer.eos_token
 
     model = PeftModel.from_pretrained(model, FINE_TUNE_ID, cache_dir=CACHE_DIR)
 
@@ -56,9 +57,9 @@ In field of NLP, machine learn algorithms is used for make computers can process
         tokenized_paragraphs.append([sentence.text for sentence in doc.sents])
 
     instructions = [
-        "Make the sentence clear",
-        "Fix coherence in this sentence",
         "Remove grammar mistakes",
+        "Fix coherence in this sentence",
+        "Make the sentence clear",
         "Make this paragraph more neutral",
     ]
 
@@ -80,25 +81,22 @@ In field of NLP, machine learn algorithms is used for make computers can process
                         "sentence": sentence,
                         "corrected_sentence": "",
                     }
-                )
+                ).strip()
 
-                model_input = tokenizer(eval_prompt, return_tensors="pt").to("cuda")
+                model_input = tokenizer(eval_prompt, return_tensors="pt", pad).to("cuda")
                 input_length = model_input["input_ids"].shape[1]
 
                 # 1.5 times the input sentence number of tokens
-                model_input["max_length"] = input_length * 1.5
+                model_input["max_length"] = int(input_length * 3)
 
                 with torch.no_grad():
                     sentence = tokenizer.decode(
-                        model.generate(**model_input)[0],
+                        model.generate(**model_input)[0][
+                            input_length:
+                        ],  # take only generated tokens
                         skip_special_tokens=True,
+                        pad_token_id=tokenizer.pad_token
                     )
-                    # take only generated tokens
-                    sentence = sentence[input_length:]
-
-                    # strip the sentence of any trailing whitespace and
-                    # remove anything after special instruction ### including ###
-                    sentence = sentence.strip().split("###")[0]
             output_paragraph.append(sentence)
         output.append(" ".join(output_paragraph))
 
