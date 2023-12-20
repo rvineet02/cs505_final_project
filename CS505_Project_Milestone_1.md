@@ -188,9 +188,3 @@ As discussed above, we can use the human feedback more broadly as well for all m
   - [x] Remember to give feedback based on section of writing that is missing (i.e. evidence is missing) by feeding it to Llama?
 - [x] @Alex Lavaee Setup Mistral 7B with [Grammarly](https://www.notion.so/CS505-Project-Milestone-1-020eb00dd91946f0b52eb2650c44c26c?pvs=21) dataset
 - [x] @Vineet Raju @Dhruv Chandwani @Alex Lavaee Prepare Frontend
-
-## Progress Trackers:
-
-[Dhruv - Essay Dissection Model](https://www.notion.so/Dhruv-Essay-Dissection-Model-7d7822f337f34eb99e8721aa4299402c?pvs=21)
-
-[Alex Progress Tracker](https://www.notion.so/Alex-Progress-Tracker-e029aee6bf7a4b1d81e246dd9c6d75c4?pvs=21)
