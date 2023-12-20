@@ -9,7 +9,7 @@ from grammar_ninja.data.grammar.preprocessing import (
     PromptTemplate,
 )
 
-CACHE_DIR = "/home/paperspace/.cache/huggingface/transformers"
+CACHE_DIR = "/Users/alilavaee/.cache/huggingface/transformers"
 MODEL_ID = "mistralai/Mistral-7B-v0.1"
 FINE_TUNE_ID = "lavaman131/mistral-7b-grammar"
 PROMPT_NAME = "simple"
@@ -29,7 +29,7 @@ In field of NLP, machine learn algorithms is used for make computers can process
     model = AutoModelForCausalLM.from_pretrained(
         pretrained_model_name_or_path=MODEL_ID,
         cache_dir=CACHE_DIR,
-        quantization_config=config,
+        # quantization_config=config,
         device_map="auto",
     )
 
@@ -83,7 +83,7 @@ In field of NLP, machine learn algorithms is used for make computers can process
                     }
                 ).strip()
 
-                model_input = tokenizer(eval_prompt, return_tensors="pt", pad).to("cuda")
+                model_input = tokenizer(eval_prompt, return_tensors="pt").to("cuda")
                 input_length = model_input["input_ids"].shape[1]
 
                 # 1.5 times the input sentence number of tokens

@@ -1,12 +1,12 @@
 name: grammar_ninja
 channels:
+  - pytorch
   - conda-forge
 dependencies:
   - python=3.10
-  - pytorch
-  - torchvision
-  - torchaudio
-  - pytorch-cuda=12.1
+  - pytorch::pytorch
+  - pytorch::torchvision
+  - pytorch::torchaudio
   - ca-certificates
   - openssl
   - pandas
@@ -21,4 +21,12 @@ dependencies:
   - ipython
   - jupyter
   - ipykernel
-prefix: /home/paperspace/miniforge3/envs/grammar_ninja
+  - pip
+  - pip:
+    - spacy
+    - transformers
+    - peft
+    - bitsandbytes
+    - hf_transfer
+    - datasets
+    
