@@ -19,10 +19,9 @@ from grammar_ninja.data.grammar.preprocessing import (
     generate_prompt,
 )
 
-
 os.environ["WANDB_PROJECT"] = "mistral-7b-grammar"
 
-RUN_NAME = os.environ.get("WANDB_PROJECT")
+RUN_NAME = "mistral-7b-grammar-all"
 OUTPUT_DIR = f"../../exps/{RUN_NAME}"
 LOGGING_DIR = f"../../exps/{RUN_NAME}/logs"
 MAX_LENGTH = 128
@@ -114,19 +113,20 @@ if __name__ == "__main__":
         args=transformers.TrainingArguments(
             output_dir=OUTPUT_DIR,
             warmup_steps=1,
-            per_device_train_batch_size=2,
-            gradient_accumulation_steps=1,
+            per_device_train_batch_size=8,  # Batch size,
+            gradient_accumulation_steps=1,  # No gradient accumulation steps,
             gradient_checkpointing=True,
-            max_steps=1000,
+            # max_steps=1000,  # Total number of training steps
+            num_train_epochs=1,
             learning_rate=2.5e-5,  # Want a small lr for finetuning
-            bf16=True,
-            optim="paged_adamw_8bit",
-            logging_steps=25,  # When to start reporting loss
+            bf16=True,  # Use mixed precision training with bfloat16,
+            optim="paged_adamw_8bit", # Use 8-bit AdamW
+            logging_steps=250,  # When to start reporting loss
             logging_dir=LOGGING_DIR,  # Directory for storing logs
             save_strategy="steps",  # Save the model checkpoint every logging step
-            save_steps=25,  # Save checkpoints every 25 steps
+            save_steps=1000,  # Save checkpoints
             evaluation_strategy="steps",  # Evaluate the model every logging step
-            eval_steps=25,  # Evaluate and save checkpoints every 25 steps
+            eval_steps=1000,  # Evaluate and save checkpoints
             do_eval=True,  # Perform evaluation at the end of training
             report_to="wandb",
             run_name=f"{RUN_NAME}-{datetime.now().strftime('%Y-%m-%d-%H-%M')}",  # Name of the W&B run (optional)
