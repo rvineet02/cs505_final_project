@@ -3,7 +3,7 @@ import argparse
 import torch
 from transformers import BertConfig, BertModel, BertTokenizer
 
-from feedback_scores.model import BERT_Classifier
+from grammar_ninja.model.feedback_scores.model import BERT_Classifier
 
 tokenizer = BertTokenizer.from_pretrained("bert-base-cased")
 

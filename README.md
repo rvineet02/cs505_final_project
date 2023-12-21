@@ -4,7 +4,7 @@
 
 ```bash
 # install dependencies
-conda env create --file env.yml
+conda env create --file config/${CONDA_ENV_FILE}
 # install grammar-ninja package
 pip install -e .
 ```

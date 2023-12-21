@@ -86,9 +86,9 @@ Grammar, style, and writing improvement datasets:
 
 - Datasets:
   - [https://www.kaggle.com/competitions/feedback-prize-effectiveness/data?select=train.csv](https://www.kaggle.com/competitions/feedback-prize-effectiveness/data?select=train.csv)
-    ![Screenshot 2023-11-30 at 11.09.28 AM.png](./images/CS505%20Project%20Milestone%201%20020eb00dd91946f0b52eb2650c44c26c/Screenshot_2023-11-30_at_11.09.28_AM.png)
+    ![Screenshot 2023-11-30 at 11.09.28 AM.png](./images/milestone_1/essay_dissection_kaggle_1.png)
   - [https://www.kaggle.com/competitions/feedback-prize-2021/data?select=train.csv](https://www.kaggle.com/competitions/feedback-prize-2021/data?select=train.csv)
-    ![Screenshot 2023-11-30 at 11.11.38 AM.png](./images/CS505%20Project%20Milestone%201%20020eb00dd91946f0b52eb2650c44c26c/Screenshot_2023-11-30_at_11.11.38_AM.png)
+    ![Screenshot 2023-11-30 at 11.11.38 AM.png](./images/milestone_1/essay_dissection_kaggle_2.png)
 
 The data sources in focus right now have different labels and methods for classifying different parts of the arguments. All the data will have to be pre-processed to follow the same standard for dissection
 
