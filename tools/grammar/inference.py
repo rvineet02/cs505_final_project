@@ -29,7 +29,7 @@ In field of NLP, machine learn algorithms is used for make computers can process
     model = AutoModelForCausalLM.from_pretrained(
         pretrained_model_name_or_path=MODEL_ID,
         cache_dir=CACHE_DIR,
-        # quantization_config=config,
+        quantization_config=config,
         device_map="auto",
     )
 
