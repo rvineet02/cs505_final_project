@@ -1,9 +1,9 @@
 import re
 import torch
-import ctransformers
 import transformers
 from peft import PeftModel
 import spacy
+import os
 
 from grammar_ninja.data.grammar.preprocessing import (
     PROMPT_TEMPLATE_PATHS,
@@ -11,7 +11,7 @@ from grammar_ninja.data.grammar.preprocessing import (
 )
 from argparse import ArgumentParser
 
-CACHE_DIR = "/Users/alilavaee/.cache/huggingface/transformers"
+HF_HOME = os.environ.get("HF_HOME", None)
 MODEL_ID = "mistralai/Mistral-7B-v0.1"
 FINE_TUNE_ID = "lavaman131/mistral-7b-grammar"
 PROMPT_NAME = "simple"
@@ -47,25 +47,20 @@ def main():
 
     model = transformers.AutoModelForCausalLM.from_pretrained(
         pretrained_model_name_or_path=MODEL_ID,
-        cache_dir=CACHE_DIR,
+        cache_dir=HF_HOME,
         quantization_config=config,
-        torch_dtype=torch.float16,
-        device_map=device,
+        # torch_dtype=torch.bfloat16 if device == "cuda" else torch.float16,
+        device_map="auto",
     )
 
-    # model = ctransformers.AutoModelForCausalLM.from_pretrained(
-    #     "TheBloke/Mistral-7B-v0.1-GGUF",
-    #     model_file="mistral-7b-v0.1.Q4_K_M.gguf",
-    #     model_type="mistral",
-    #     gpu_layers=50,
-    # )
-
-    model = PeftModel.from_pretrained(model, FINE_TUNE_ID, cache_dir=CACHE_DIR)
+    model = PeftModel.from_pretrained(model, FINE_TUNE_ID, cache_dir=HF_HOME)
 
     tokenizer = transformers.AutoTokenizer.from_pretrained(
         FINE_TUNE_ID,
+        padding_side="left",
         add_bos_token=True,
-        cache_dir=CACHE_DIR,
+        cache_dir=HF_HOME,
+        use_cache=True,
     )
     tokenizer.pad_token = tokenizer.eos_token
 
@@ -86,7 +81,6 @@ def main():
     instructions = [
         "Remove grammar mistakes",
         # "Fix coherence in this sentence",
-        # "Make the sentence clear",
         # "Make this paragraph more neutral",
     ]
 
@@ -110,6 +104,8 @@ def main():
                     }
                 ).strip()
 
+                print(eval_prompt)
+
                 model_input = tokenizer(eval_prompt, return_tensors="pt").to(device)
                 input_length = model_input["input_ids"].shape[1]  # type: ignore
 
@@ -117,11 +113,8 @@ def main():
                 model_input["max_length"] = int(input_length * 3)
 
                 with torch.no_grad():
-                    # generation = model.generate(model_input["input_ids"][0])
-                    # generation = [g for g in generation]
-                    # print(tokenizer.decode(generation))
                     sentence = tokenizer.decode(
-                        model.generate(**model_input, repetition_penalty=2.0)[0][
+                        model.generate(**model_input)[0][
                             input_length:
                         ],  # take only generated tokens
                         skip_special_tokens=True,

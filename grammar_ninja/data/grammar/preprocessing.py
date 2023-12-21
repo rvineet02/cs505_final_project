@@ -38,11 +38,15 @@ def generate_prompt(
     truncation: Union[bool, str],
     padding: Union[bool, str],
 ) -> Dict[str, Any]:
-    result = tokenizer(
-        prompt_template.format_prompt(example),
-        truncation=truncation,
-        max_length=max_length,
-        padding=padding,
+    result = dict()
+    result["input"] = prompt_template.format_prompt(example)
+    result.update(
+        tokenizer(
+            result["input"],
+            truncation=truncation,
+            max_length=max_length,
+            padding=padding,
+        ) # type: ignore
     )
     result["labels"] = result["input_ids"].copy()
     return result
