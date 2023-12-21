@@ -7,9 +7,9 @@ from torch.utils.data import (DataLoader, Dataset, RandomSampler,
                               SequentialSampler)
 from transformers import BertConfig, BertModel, BertTokenizer
 
-from helper import getenv
+import os
 
-APPLE_M1_FLAG = getenv("APPLE_M1_FLAG")
+APPLE_M1_FLAG = os.environ.get("APPLE_M1_FLAG", 0)
 
 # load train data
 file_path = "./data/feedback_scores/train.csv"
