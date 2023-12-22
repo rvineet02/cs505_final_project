@@ -6,7 +6,7 @@
 
 ```bash
 export HF_HUB_ENABLE_HF_TRANSFER=1
-export HF_HOME=/home/paperspace/.cache/huggingface/transformers
+export HF_HOME=$HOME/.cache/huggingface/transformers
 ```
 
 ## Install Environment

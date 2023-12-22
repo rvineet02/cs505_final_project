@@ -76,8 +76,8 @@ def main():
 
     instructions = [
         "Remove grammar mistakes",
-        "Fix coherence in this sentence",
-        "Make this paragraph more neutral",
+        # "Fix coherence in this sentence",
+        # "Make this paragraph more neutral",
     ]
 
     prompt_template = PromptTemplate(
@@ -87,6 +87,8 @@ def main():
     model.eval()
 
     output = []
+    
+    # print(tokenized_paragraphs)
 
     for paragraph in tokenized_paragraphs:
         output_paragraph = []
