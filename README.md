@@ -1,6 +1,8 @@
 # Grammar Ninja
 
-# Setup
+- ## Final Report and Milestone Document can be found in the root dir
+
+# Setup for Demo
 
 ## Environment Variables
 
