@@ -1,79 +1,39 @@
-import torch
+from argparse import ArgumentParser
 from transformers import AutoTokenizer
+from grammar_ninja import HF_HOME
+from grammar_ninja.data import read_text
+from grammar_ninja.model.essay_dissection.model import EssayDisectionModel
+from grammar_ninja.model.utils import get_default_device
 
-tokenizer = AutoTokenizer.from_pretrained('allenai/longformer-base-4096')
-
-LABELS = ['Claim', 'Evidence', 'Concluding Statement', 'Rebuttal', 'Position','Counterclaim', 'Lead']
-
-model = torch.load('../data/model.pth')
-model.to('mps')
-model.eval()
-
-def pad_sequence(sequence, max_len, padding_value=0):
-    if len(sequence) < max_len:
-        return sequence + [padding_value] * (max_len - len(sequence))
-    else:
-        return sequence[:max_len]
+DEFAULT_DEVICE = get_default_device()
+MAX_LENGTH = 205
 
 
-def predict(text):
+def main():
+    parser = ArgumentParser()
+    parser.add_argument("file_path", type=str)
+    parser.add_argument("--device", type=str, default=DEFAULT_DEVICE)
 
-    encoded = tokenizer(text, max_length=205, padding='max_length')
-    padded_input = encoded['input_ids']
-    mask = encoded['attention_mask']
+    args = parser.parse_args()
 
-    padded_input_tensor = torch.tensor(padded_input, dtype=torch.long).to('mps')
-    mask_tensor = torch.tensor(mask, dtype=torch.long).to('mps')
+    file_path = args.file_path
+    text = read_text(file_path)
+    device = args.device
 
-    padded_input_batch = padded_input_tensor.unsqueeze(0)
-    mask_batch = mask_tensor.unsqueeze(0)
+    tokenizer = AutoTokenizer.from_pretrained(
+        "lavaman131/longformer-essay-dissection", cache_dir=HF_HOME
+    )
 
-    with torch.no_grad():
-        logits = model(padded_input_batch, mask_batch)
+    model = EssayDisectionModel.from_pretrained(
+        "lavaman131/longformer-essay-dissection",
+        cache_dir=HF_HOME,
+        device_map=device,
+    )
 
-    predictions = torch.argmax(logits, dim=-1)
+    results = model.predict(text=text, tokenizer=tokenizer, max_length=MAX_LENGTH) # type: ignore
 
-    relevant_predictions = predictions[0][mask_tensor.bool()].cpu().numpy()
-
-    token_to_word = encoded.words()[:len(relevant_predictions)]
-
-    word_predictions = []
-
-    for idx, label in zip(token_to_word, relevant_predictions):
-        if idx and idx >= len(word_predictions):
-            word_predictions.append(label)
-
-    return word_predictions
+    print(results)
 
 
-def visualize(text, predictions):
-    words = text.split()
-    tags = [labels[i] for i in predictions]
-
-    tag_dict = {}
-    current_tag = None
-    sequence_number = {}
-
-    for word, tag in zip(words, tags):
-        # If the tag changes, reset the current tag and increment sequence number
-        if tag != current_tag:
-            current_tag = tag
-            sequence_number[tag] = sequence_number.get(tag, 0) + 1
-            key = f"{tag}_{sequence_number[tag]}"
-            tag_dict[key] = []
-
-        # Add the word to the current sequence
-        key = f"{tag}_{sequence_number[tag]}"
-        tag_dict[key].append(word)
-
-    return tag_dict
-
-def inference(text):
-    predictions = predict(text)
-    tag_dict = visualize(text, predictions)
-    return tag_dict
-
-text = "Sample text from an essay..."
-prediction = predict(text)
-print("Predicted label:", prediction)
-visualize(text, prediction)
+if __name__ == "__main__":
+    main()

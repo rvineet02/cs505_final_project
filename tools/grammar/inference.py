@@ -13,6 +13,7 @@ from argparse import ArgumentParser
 from grammar_ninja.model.utils import get_default_device
 from grammar_ninja import HF_HOME
 
+
 MODEL_ID = "mistralai/Mistral-7B-v0.1"
 FINE_TUNE_ID = "lavaman131/mistral-7b-grammar"
 PROMPT_NAME = "simple"
@@ -21,7 +22,7 @@ DEFAULT_DEVICE = get_default_device()
 
 def main():
     parser = ArgumentParser()
-    parser.add_argument("file_path", type=str, required=True)
+    parser.add_argument("file_path", type=str)
     parser.add_argument("--device", type=str, default=DEFAULT_DEVICE)
 
     args = parser.parse_args()
@@ -45,8 +46,8 @@ def main():
         pretrained_model_name_or_path=MODEL_ID,
         cache_dir=HF_HOME,
         quantization_config=config,
-        # torch_dtype=torch.bfloat16 if device == "cuda" else torch.float16,
-        device_map=device,
+        torch_dtype=torch.bfloat16 if device == "cuda" else torch.float16,
+        device_map="auto" if device == "cuda" else device,
     )
 
     model = PeftModel.from_pretrained(model, FINE_TUNE_ID, cache_dir=HF_HOME)
@@ -99,8 +100,6 @@ def main():
                     }
                 ).strip()
 
-                print(eval_prompt)
-
                 model_input = tokenizer(eval_prompt, return_tensors="pt").to(device)
                 input_length = model_input["input_ids"].shape[1]  # type: ignore
 
@@ -113,17 +112,16 @@ def main():
                             input_length:
                         ],  # take only generated tokens
                         skip_special_tokens=True,
-                        pad_token_id=tokenizer.pad_token,
+                        do_sample=True,
+                        pad_token_id=tokenizer.eos_token_id,
                     )
-                    print(sentence)
-                raise Exception("exit")
+                    # filter out anything after ### (end of prompt)
+                    sentence = sentence.split("###")[0]
             output_paragraph.append(sentence)
-            break
         output.append(" ".join(output_paragraph))
-        break
     output = "\n".join(output)
 
-    # print(output)
+    print(output)
 
 
 if __name__ == "__main__":

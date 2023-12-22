@@ -1,6 +1,5 @@
 from typing import List
 import torch
-from grammar_ninja import HF_HOME
 from transformers import PreTrainedModel, BertConfig, BertModel, BertTokenizer
 from torch import nn
 

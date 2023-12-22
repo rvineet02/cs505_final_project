@@ -19,4 +19,4 @@ if __name__ == "__main__":
     # model.load_state_dict(torch.load("../../ckpts/feedback_scores/pytorch_model.bin"))
     # model.push_to_hub("lavaman131/bert-cased-writing-score")
     # tokenizer.push_to_hub("lavaman131/bert-cased-writing-score")
-    model = BERTClassifier.from_pretrained("lavaman131/bert-cased-writing-score")
+    model = BERTClassifier.from_pretrained("lavaman131/bert-cased-writing-score", cache_dir=HF_HOME)
