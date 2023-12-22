@@ -3,35 +3,31 @@ import torch
 import transformers
 from peft import PeftModel
 import spacy
-import os
 
 from grammar_ninja.data.grammar.preprocessing import (
     PROMPT_TEMPLATE_PATHS,
     PromptTemplate,
 )
+from grammar_ninja.data import read_text
 from argparse import ArgumentParser
+from grammar_ninja.model.utils import get_default_device
+from grammar_ninja import HF_HOME
 
-HF_HOME = os.environ.get("HF_HOME", None)
 MODEL_ID = "mistralai/Mistral-7B-v0.1"
 FINE_TUNE_ID = "lavaman131/mistral-7b-grammar"
 PROMPT_NAME = "simple"
-
-if torch.cuda.is_available():
-    DEFAULT_DEVICE = "cuda"
-elif torch.backends.mps.is_available():
-    DEFAULT_DEVICE = "mps"
-else:
-    DEFAULT_DEVICE = "cpu"
+DEFAULT_DEVICE = get_default_device()
 
 
 def main():
     parser = ArgumentParser()
-    parser.add_argument("--text", type=str, required=True)
+    parser.add_argument("file_path", type=str, required=True)
     parser.add_argument("--device", type=str, default=DEFAULT_DEVICE)
 
     args = parser.parse_args()
 
-    text = args.text
+    file_path = args.file_path
+    text = read_text(file_path)
     device = args.device
 
     config = (
@@ -50,14 +46,13 @@ def main():
         cache_dir=HF_HOME,
         quantization_config=config,
         # torch_dtype=torch.bfloat16 if device == "cuda" else torch.float16,
-        device_map="auto",
+        device_map=device,
     )
 
     model = PeftModel.from_pretrained(model, FINE_TUNE_ID, cache_dir=HF_HOME)
 
     tokenizer = transformers.AutoTokenizer.from_pretrained(
         FINE_TUNE_ID,
-        padding_side="left",
         add_bos_token=True,
         cache_dir=HF_HOME,
         use_cache=True,
@@ -80,8 +75,8 @@ def main():
 
     instructions = [
         "Remove grammar mistakes",
-        # "Fix coherence in this sentence",
-        # "Make this paragraph more neutral",
+        "Fix coherence in this sentence",
+        "Make this paragraph more neutral",
     ]
 
     prompt_template = PromptTemplate(

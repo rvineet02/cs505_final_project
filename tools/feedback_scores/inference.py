@@ -1,126 +1,43 @@
-import argparse
-
-import torch
+from typing import List
 from transformers import BertConfig, BertModel, BertTokenizer
+from grammar_ninja.data import read_text
+from grammar_ninja.model.feedback_scores.model import BERTClassifier
+from grammar_ninja.model.utils import get_default_device
+from argparse import ArgumentParser
+from grammar_ninja import HF_HOME
 
-from grammar_ninja.model.feedback_scores.model import BERT_Classifier
+DEFAULT_DEVICE = get_default_device()
+MAX_LENGTH = 200
 
-tokenizer = BertTokenizer.from_pretrained("bert-base-cased")
-
-
-def set_device(APPLE_M1_FLAG=1):
-    print("Setting device...")
-    device = None
-    if APPLE_M1_FLAG:
-        # try to setup M1 GPU
-        is_gpu = torch.backends.mps.is_available()
-        if is_gpu:
-            device = torch.device("mps")
-            print("DEVICE: M1 GPU")
-        else:
-            device = torch.device("cpu")
-            print("DEVICE: CPU")
-    else:
-        # use GPU if available
-        if torch.cuda.is_available():
-            device = torch.device("cuda")
-            print("DEVICE: CUDA - GPU")
-        else:
-            device = torch.device("cpu")
-            print("DEVICE: CPU")
-    return device
-
-
-def predict(text, model, device, MAX_LEN=200):
-    print("Predicting...")
-    model.to(device)
-    model.eval()
-    with torch.no_grad():
-        inputs = tokenizer.encode_plus(
-            text,
-            None,
-            add_special_tokens=True,
-            max_length=MAX_LEN,
-            padding="max_length",
-            truncation=True,
-            return_token_type_ids=True,
-        )
-
-        ids = inputs["input_ids"]
-        mask = inputs["attention_mask"]
-        token_type_ids = inputs["token_type_ids"]
-
-        ids = torch.LongTensor(ids).unsqueeze(0).to(device)
-        mask = torch.LongTensor(mask).unsqueeze(0).to(device)
-        token_type_ids = torch.LongTensor(token_type_ids).unsqueeze(0).to(device)
-
-        outputs = model(ids, mask, token_type_ids)
-
-        print("Done predicting...")
-        return outputs.cpu().detach().numpy().tolist()[0]
-
-
-def output(results):
+def postprocess(results: List[float]):
     # every element should have 2 decimal places
     results = [round(x, 2) for x in results]
     return results
 
 
-def load_model(path):
-    print("Loading model...")
-    model = BERT_Classifier()
-    model.load_state_dict(torch.load(path, map_location=torch.device('cpu')))
+def main():
+    parser = ArgumentParser()
+    parser.add_argument("file_path", type=str)
+    parser.add_argument("--device", type=str, default=DEFAULT_DEVICE)
 
-    print("Done loading model...")
-    return model
+    args = parser.parse_args()
 
+    file_path = args.file_path
+    text = read_text(file_path)
+    device = args.device
+    
+    tokenizer = BertTokenizer.from_pretrained("lavaman131/bert-cased-writing-score", cache_dir=HF_HOME)
+    model = BERTClassifier.from_pretrained("lavaman131/bert-cased-writing-score",
+                                           device_map=device,
+                                           cache_dir=HF_HOME)
 
-def read_text(path):
-    print("Reading text from file...")
-    # load contents from file into single string
-    with open(path, "r") as f:
-        text = f.read()
-    print("Done loading text...")
-    return text
+    results = model.predict( # type: ignore
+        text=text, tokenizer=tokenizer, device=device, max_length=MAX_LENGTH
+    )
+    results = postprocess(results=results)
+
+    print(results)
 
 
 if __name__ == "__main__":
-    # parse arguments
-    parser = argparse.ArgumentParser()
-
-    parser.add_argument(
-        "--text_path",
-        type=str,
-        default="test.txt",
-        help="path to text file",
-    )
-    parser.add_argument(
-        "--model_path",
-        type=str,
-        default="./models/bert_classifier_cased.pth",
-        help="path to model",
-    )
-    parser.add_argument(
-        "--M1",
-        type=int,
-        default=1,
-        help="flag for M1 GPU",
-    )
-
-    args = parser.parse_args()
-    print("Parsing Args...")
-    print(args)
-
-    text, device = None, None
-    if args.text_path:
-        text = read_text(args.text_path)
-    if args.M1:
-        device = set_device(args.M1)
-
-    assert text is not None, "text is None"
-    assert device is not None, "device is None"
-    model = load_model(args.model_path)
-    assert model is not None, "model is None"
-    results = predict(text, model, device)
-    results = output(results)
-    print(results)
+    main()

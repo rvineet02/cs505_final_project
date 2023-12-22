@@ -1,8 +1,8 @@
 import torch
 from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
 from peft import PeftModel
+from grammar_ninja import HF_HOME
 
-CACHE_DIR = "/home/paperspace/.cache/huggingface/transformers"
 MODEL_ID = "mistralai/Mistral-7B-v0.1"
 
 if __name__ == "__main__":
@@ -15,7 +15,7 @@ if __name__ == "__main__":
 
     model = AutoModelForCausalLM.from_pretrained(
         pretrained_model_name_or_path=MODEL_ID,
-        cache_dir=CACHE_DIR,
+        cache_dir=HF_HOME,
         quantization_config=config,
         device_map="auto",
     )
@@ -23,11 +23,11 @@ if __name__ == "__main__":
     tokenizer = AutoTokenizer.from_pretrained(
         pretrained_model_name_or_path=MODEL_ID,
         add_bos_token=True,
-        cache_dir=CACHE_DIR,
+        cache_dir=HF_HOME,
     )
 
     model = PeftModel.from_pretrained(
-        model, "../../exps/mistral-7b-grammar-all/checkpoint-8000", cache_dir=CACHE_DIR
+        model, "../../exps/mistral-7b-grammar-alpaca/checkpoint-4000", cache_dir=HF_HOME
     )
 
     model.push_to_hub("lavaman131/mistral-7b-grammar")

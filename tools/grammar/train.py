@@ -18,6 +18,7 @@ from grammar_ninja.data.grammar.preprocessing import (
     PROMPT_TEMPLATE_PATHS,
     generate_prompt,
 )
+from grammar_ninja import HF_HOME
 
 os.environ["WANDB_PROJECT"] = "mistral-7b-grammar"
 
@@ -26,8 +27,6 @@ OUTPUT_DIR = f"../../exps/{RUN_NAME}"
 LOGGING_DIR = f"../../exps/{RUN_NAME}/logs"
 MAX_LENGTH = 200
 
-HF_HOME = os.environ.get("HF_HOME", None)
-assert HF_HOME is not None, "HF_HOME is not set"
 MODEL_ID = "mistralai/Mistral-7B-v0.1"
 PROMPT_NAME = "simple"
 DATA_DIR = Path("/data/grammar/coedit/processed")
