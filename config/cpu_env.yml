@@ -7,7 +7,6 @@ dependencies:
   - pytorch
   - torchvision
   - torchaudio
-  - pytorch-cuda=12.1
   - ca-certificates
   - openssl
   - pandas
@@ -22,3 +21,13 @@ dependencies:
   - ipython
   - jupyter
   - ipykernel
+  - pip
+  - pip:
+    - accelerate
+    - bitsandbytes
+    - transformers
+    - huggingface-hub
+    - hf_transfer
+    - peft
+    - wandb
+    - spacy

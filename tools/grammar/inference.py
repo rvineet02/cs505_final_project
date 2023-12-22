@@ -1,6 +1,6 @@
 import re
 import torch
-from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
+import transformers
 from peft import PeftModel
 import spacy
 
@@ -8,39 +8,57 @@ from grammar_ninja.data.grammar.preprocessing import (
     PROMPT_TEMPLATE_PATHS,
     PromptTemplate,
 )
+from grammar_ninja.data import read_text
+from argparse import ArgumentParser
+from grammar_ninja.model.utils import get_default_device
+from grammar_ninja import HF_HOME
 
-CACHE_DIR = "/Users/alilavaee/.cache/huggingface/transformers"
+
 MODEL_ID = "mistralai/Mistral-7B-v0.1"
 FINE_TUNE_ID = "lavaman131/mistral-7b-grammar"
 PROMPT_NAME = "simple"
+DEFAULT_DEVICE = get_default_device()
 
-if __name__ == "__main__":
-    text = """NLP, it stand for Natural Language Processing, is a field in computer science, where focus on how computers can understanding and interact with human language. It's goal is to make computers can understand and respond to text or voice data. But, it's hard because languages is very complex and have many rules that often not follow logic.
 
-In field of NLP, machine learn algorithms is used for make computers can process and analyze large amounts of natural language data. The problems is that, even with advanced algorithms, computers often don't understand the nuances, like sarcasm or idioms, in human languages. So, many times, they makes errors when they tries to interpret what a human is saying or writing."""
+def main():
+    parser = ArgumentParser()
+    parser.add_argument("file_path", type=str)
+    parser.add_argument("--device", type=str, default=DEFAULT_DEVICE)
 
-    config = BitsAndBytesConfig(
-        load_in_4bit=True,
-        bnb_4bit_quant_type="nf4",
-        bnb_4bit_use_double_quant=True,
-        bnb_4bit_compute_dtype=torch.bfloat16,
+    args = parser.parse_args()
+
+    file_path = args.file_path
+    text = read_text(file_path)
+    device = args.device
+
+    config = (
+        transformers.BitsAndBytesConfig(
+            load_in_4bit=True,
+            bnb_4bit_quant_type="nf4",
+            bnb_4bit_use_double_quant=True,
+            bnb_4bit_compute_dtype=torch.bfloat16,
+        )
+        if device == "cuda"
+        else None
     )
 
-    model = AutoModelForCausalLM.from_pretrained(
+    model = transformers.AutoModelForCausalLM.from_pretrained(
         pretrained_model_name_or_path=MODEL_ID,
-        cache_dir=CACHE_DIR,
-        # quantization_config=config,
-        device_map="auto",
+        cache_dir=HF_HOME,
+        quantization_config=config,
+        torch_dtype=torch.bfloat16 if device == "cuda" else torch.float16,
+        device_map="auto" if device == "cuda" else device,
     )
 
-    tokenizer = AutoTokenizer.from_pretrained(
-        pretrained_model_name_or_path=FINE_TUNE_ID,
+    model = PeftModel.from_pretrained(model, FINE_TUNE_ID, cache_dir=HF_HOME)
+
+    tokenizer = transformers.AutoTokenizer.from_pretrained(
+        FINE_TUNE_ID,
         add_bos_token=True,
-        cache_dir=CACHE_DIR,
+        cache_dir=HF_HOME,
+        use_cache=True,
     )
     tokenizer.pad_token = tokenizer.eos_token
-
-    model = PeftModel.from_pretrained(model, FINE_TUNE_ID, cache_dir=CACHE_DIR)
 
     # Replace more than one consecutive newline with a single newline
     text = re.sub(r"\n\n+", "\n", text)
@@ -58,9 +76,8 @@ In field of NLP, machine learn algorithms is used for make computers can process
 
     instructions = [
         "Remove grammar mistakes",
-        "Fix coherence in this sentence",
-        "Make the sentence clear",
-        "Make this paragraph more neutral",
+        # "Fix coherence in this sentence",
+        # "Make this paragraph more neutral",
     ]
 
     prompt_template = PromptTemplate(
@@ -70,6 +87,8 @@ In field of NLP, machine learn algorithms is used for make computers can process
     model.eval()
 
     output = []
+    
+    # print(tokenized_paragraphs)
 
     for paragraph in tokenized_paragraphs:
         output_paragraph = []
@@ -83,8 +102,8 @@ In field of NLP, machine learn algorithms is used for make computers can process
                     }
                 ).strip()
 
-                model_input = tokenizer(eval_prompt, return_tensors="pt").to("cuda")
-                input_length = model_input["input_ids"].shape[1]
+                model_input = tokenizer(eval_prompt, return_tensors="pt").to(device)
+                input_length = model_input["input_ids"].shape[1]  # type: ignore
 
                 # 1.5 times the input sentence number of tokens
                 model_input["max_length"] = int(input_length * 3)
@@ -95,11 +114,17 @@ In field of NLP, machine learn algorithms is used for make computers can process
                             input_length:
                         ],  # take only generated tokens
                         skip_special_tokens=True,
-                        pad_token_id=tokenizer.pad_token
+                        do_sample=True,
+                        pad_token_id=tokenizer.eos_token_id,
                     )
+                    # filter out anything after ### (end of prompt)
+                    sentence = sentence.split("###")[0]
             output_paragraph.append(sentence)
         output.append(" ".join(output_paragraph))
-
     output = "\n".join(output)
 
     print(output)
+
+
+if __name__ == "__main__":
+    main()
