@@ -16,6 +16,8 @@ export HF_HOME=/home/paperspace/.cache/huggingface/transformers
 conda env create --file config/${CONDA_ENV_FILE}
 # install grammar-ninja package
 pip install -e .
+# download spacy model
+python -m spacy download en_core_web_md
 ```
 
 # Demo

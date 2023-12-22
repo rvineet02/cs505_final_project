@@ -1,12 +1,12 @@
 name: grammar_ninja
 channels:
+  - pytorch
   - conda-forge
 dependencies:
   - python=3.10
   - pytorch
   - torchvision
   - torchaudio
-  - pytorch-cuda=12.1
   - ca-certificates
   - openssl
   - pandas
