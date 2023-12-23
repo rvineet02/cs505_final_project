@@ -14,7 +14,7 @@ This project aims to develop a Natural Language Processing (NLP) based system th
 
 To this end, we have decided to split our problem into three separate parts - predicting feedback scores based on the writing, identifying the different parts of argumentative writing (think Parts-Of-Speech tagging but for sentences as opposed to words), and finally constructing a generative model to produce the corrected version of a given input sentence.
 
-We also provide instructions to setup the project ![here](#Setup)
+We also provide instructions to setup the project [here](#Setup).
 
 # Methodology
 
