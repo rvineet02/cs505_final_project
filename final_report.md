@@ -1,4 +1,4 @@
-# CS 505 Final Report
+# Grammar Ninja
 
 # Abstract
 
